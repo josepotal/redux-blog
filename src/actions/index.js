@@ -1,4 +1,5 @@
 import axios from 'axios';
+import database from '../database';
 
 export const FETCH_POSTS = 'fetch_posts';
 export const FETCH_POST = 'fetch_post';
@@ -8,14 +9,23 @@ export const DELETE_POST = 'delete_post';
 const ROOT_URL = 'http://reduxblog.herokuapp.com/api/'
 const API_KEY = '?key=JOSEPOTAL1234'
 
+
+// fetch data from FIREBASE!! using redux-think
+
 export function fetchPosts() {
-  const request = axios.get(`${ROOT_URL}/posts${API_KEY}`);
-  
-  return {
-    type: FETCH_POSTS,
-    payload: request
+  return dispatch => {
+    database.ref('/posts').on('value', snap => {
+      const posts = snap.val();
+      console.log(posts)
+      dispatch ({
+        type: FETCH_POSTS,
+        payload: posts
+      });
+    })
   }
 }
+
+
 
 export function createPost(values, callback) {
   const request = axios.post(`${ROOT_URL}/posts${API_KEY}`, values)
